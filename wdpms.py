@@ -16,14 +16,17 @@ def _get_registry_callback(registry, id, iface_name, version) -> None:
         global dpms_manager
         dpms_manager = registry.bind(id, protocols.dpms.OrgKdeKwinDpmsManager, version)
     elif iface_name == "wl_output":
+        global output
         output.append(registry.bind(id, protocols.wayland.WlOutput, version))
 
 
 def get_dpms_state() -> None:
+    global output
     def _get_mode_callback(_, m):
         global dpms_mode
         dpms_mode = m
     with pywayland.client.Display() as display:
+        output = []
         display.connect()
         registry = display.get_registry()
         registry.dispatcher["global"] = _get_registry_callback
@@ -41,7 +44,9 @@ def get_dpms_state() -> None:
     return dpms_mode
 
 def set_dpms_state(state) -> None:
+    global output
     with pywayland.client.Display() as display:
+        output = []
         display.connect()
         registry = display.get_registry()
         registry.dispatcher["global"] = _get_registry_callback

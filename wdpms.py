@@ -9,7 +9,7 @@ import protocols.dpms
 
 output = []
 dpms_manager = None
-dpms_mode = None
+dpms_mode = 0
 
 def _get_registry_callback(registry, id, iface_name, version) -> None:
     if iface_name == "org_kde_kwin_dpms_manager":
@@ -20,8 +20,8 @@ def _get_registry_callback(registry, id, iface_name, version) -> None:
 
 
 def get_dpms_state() -> None:
-    dpms_mode = 0
     def _get_mode_callback(_, m):
+        global dpms_mode
         dpms_mode = m
     with pywayland.client.Display() as display:
         display.connect()
